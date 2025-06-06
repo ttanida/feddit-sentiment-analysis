@@ -93,10 +93,24 @@ jobs:
     needs: test
 
     services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
       feddit:
         image: chasingcars/feddit:latest
         env:
-          SQLALCHEMY_DATABASE_URI: "sqlite:///test.db"
+          SQLALCHEMY_DATABASE_URI: "postgresql://testuser:testpass@postgres:5432/testdb"
         ports:
           - 8080:8080
         options: >-
