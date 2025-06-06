@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: "mysecretpassword"
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - feddit-network
+
+  feddit-api:
+    image: chasingcars/feddit:latest
+    entrypoint: >
+      sh -c "sleep 10 && python main.py"
+    environment:
+      SQLALCHEMY_DATABASE_URI: "postgresql://postgres:mysecretpassword@db:5432/postgres"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - feddit-network
+
+  sentiment-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      FEDDIT_BASE_URL: "http://feddit-api:8080"
+      DEBUG: "false"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      feddit-api:
+        condition: service_healthy
+    networks:
+      - feddit-network
+
+networks:
+  feddit-network:
+    driver: bridge
