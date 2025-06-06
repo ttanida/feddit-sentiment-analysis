@@ -1,6 +1,12 @@
 """Data models package."""
 
-from .comment import CommentBase, CommentWithSentiment, SentimentAnalysisResponse, SentimentResult, SubfedditInfo
+from .comment import (
+    CommentBase,
+    CommentWithSentiment,
+    SentimentAnalysisResponse,
+    SentimentResult,
+    SubfedditInfo,
+)
 
 __all__ = [
     "CommentBase",

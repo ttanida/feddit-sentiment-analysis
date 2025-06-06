@@ -94,16 +94,22 @@ class SentimentAnalyzer:
             # Classify as positive (>= 0) or negative (< 0)
             classification = self.__classify_sentiment(polarity_score)
 
-            result = SentimentResult(polarity_score=polarity_score, classification=classification)
+            result = SentimentResult(
+                polarity_score=polarity_score, classification=classification
+            )
 
             # Cache the result for improved performance
             sentiment_cache.set(cache_key, result, settings.cache_ttl_seconds)
 
-            logger.debug(f"Analyzed sentiment for text: {text[:50]}... -> {classification} ({polarity_score:.3f})")
+            logger.debug(
+                f"Analyzed sentiment for text: {text[:50]}... -> {classification} ({polarity_score:.3f})"
+            )
             return result
 
         except Exception as e:
-            logger.error(f"Error analyzing sentiment for text: {text[:50]}... - {str(e)}")
+            logger.error(
+                f"Error analyzing sentiment for text: {text[:50]}... - {str(e)}"
+            )
             # Return positive sentiment as fallback to maintain service reliability
             return SentimentResult(polarity_score=0.0, classification="positive")
 

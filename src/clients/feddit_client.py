@@ -38,7 +38,11 @@ class FedditClient:
         self._name_to_info_cache: dict[str, SubfedditInfo] = {}
 
     async def _make_request(
-        self, method: str, endpoint: str, params: dict[str, Any] | None = None, retries: int = 0
+        self,
+        method: str,
+        endpoint: str,
+        params: dict[str, Any] | None = None,
+        retries: int = 0,
     ) -> dict[str, Any]:
         """
         Make HTTP request to Feddit API with retry logic.
@@ -64,7 +68,9 @@ class FedditClient:
                 return response.json()
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP error {e.response.status_code} for {url}: {e.response.text}")
+            logger.error(
+                f"HTTP error {e.response.status_code} for {url}: {e.response.text}"
+            )
             if retries < self.max_retries:
                 await asyncio.sleep(2**retries)  # Exponential backoff
                 return await self._make_request(method, endpoint, params, retries + 1)
@@ -187,7 +193,9 @@ class FedditClient:
             logger.error(f"Error getting subfeddit ID for {subfeddit_name}: {str(e)}")
             return None
 
-    async def get_comments(self, subfeddit_name: str, skip: int = 0, limit: int = 25) -> list[CommentBase]:
+    async def get_comments(
+        self, subfeddit_name: str, skip: int = 0, limit: int = 25
+    ) -> list[CommentBase]:
         """
         Get comments from a subfeddit by name.
 

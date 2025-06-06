@@ -101,7 +101,9 @@ class SentimentService:
         """
         reverse = sort_order.lower() == "desc"
 
-        return sorted(comments, key=lambda x: x.sentiment.polarity_score, reverse=reverse)
+        return sorted(
+            comments, key=lambda x: x.sentiment.polarity_score, reverse=reverse
+        )
 
     def _parse_date_parameters(
         self, start_date: str | None, end_date: str | None
@@ -171,10 +173,16 @@ class SentimentService:
             return self._analyze_comments_sentiment(base_comments)
 
         # Smart date-aware pagination when date filtering is needed
-        return await self._fetch_with_date_aware_pagination(subfeddit_name, validated_limit, start_date, end_date)
+        return await self._fetch_with_date_aware_pagination(
+            subfeddit_name, validated_limit, start_date, end_date
+        )
 
     async def _fetch_with_date_aware_pagination(
-        self, subfeddit_name: str, validated_limit: int, start_date: datetime | None, end_date: datetime | None
+        self,
+        subfeddit_name: str,
+        validated_limit: int,
+        start_date: datetime | None,
+        end_date: datetime | None,
     ) -> list[CommentWithSentiment]:
         """
         Fetch comments using smart date-aware pagination.
@@ -186,7 +194,9 @@ class SentimentService:
         skip = 0
         all_matching_comments = []
 
-        logger.info(f"Using smart pagination for date range: {start_date} to {end_date}")
+        logger.info(
+            f"Using smart pagination for date range: {start_date} to {end_date}"
+        )
 
         while True:
             # Fetch a batch of comments
@@ -195,11 +205,15 @@ class SentimentService:
                     subfeddit_name=subfeddit_name, skip=skip, limit=batch_size
                 )
             except FedditAPIError as e:
-                logger.error(f"Failed to fetch comments batch (skip={skip}) for {subfeddit_name}: {str(e)}")
+                logger.error(
+                    f"Failed to fetch comments batch (skip={skip}) for {subfeddit_name}: {str(e)}"
+                )
 
                 # If we have some comments already, return them instead of failing completely
                 if all_matching_comments:
-                    logger.warning(f"Returning {len(all_matching_comments)} partial results due to API error")
+                    logger.warning(
+                        f"Returning {len(all_matching_comments)} partial results due to API error"
+                    )
                     break
                 else:
                     raise  # No comments collected yet, re-raise the error
@@ -210,7 +224,9 @@ class SentimentService:
                 break
 
             # Convert timestamps to datetime objects for comparison
-            batch_dates = [datetime.fromtimestamp(comment.created_at) for comment in batch_comments]
+            batch_dates = [
+                datetime.fromtimestamp(comment.created_at) for comment in batch_comments
+            ]
             first_comment_date = batch_dates[0]
             last_comment_date = batch_dates[-1]
 
@@ -221,7 +237,9 @@ class SentimentService:
             # Check if we should skip this entire batch
             if start_date and last_comment_date < start_date:
                 # All comments in this batch are before start_date, skip to next batch
-                logger.debug("Entire batch is before start_date, skipping to next batch")
+                logger.debug(
+                    "Entire batch is before start_date, skipping to next batch"
+                )
                 skip += batch_size
                 continue
 
@@ -246,7 +264,9 @@ class SentimentService:
 
             # If we have enough comments after filtering, we can stop
             if len(all_matching_comments) >= validated_limit:
-                logger.info(f"Found enough matching comments ({len(all_matching_comments)}), stopping")
+                logger.info(
+                    f"Found enough matching comments ({len(all_matching_comments)}), stopping"
+                )
                 break
 
             # Move to next batch
@@ -254,7 +274,9 @@ class SentimentService:
 
             # Safety check to prevent infinite loops
             if skip > 10000:  # Reasonable safety limit
-                logger.warning("Reached safety limit of 10000 comments, stopping pagination")
+                logger.warning(
+                    "Reached safety limit of 10000 comments, stopping pagination"
+                )
                 break
 
         # Apply final limit and perform sentiment analysis
@@ -265,7 +287,9 @@ class SentimentService:
 
         return self._analyze_comments_sentiment(final_comments)
 
-    def _analyze_comments_sentiment(self, comments: list[CommentBase]) -> list[CommentWithSentiment]:
+    def _analyze_comments_sentiment(
+        self, comments: list[CommentBase]
+    ) -> list[CommentWithSentiment]:
         """
         Perform sentiment analysis on a list of comments.
 
@@ -308,7 +332,9 @@ class SentimentService:
             Processed list of comments
         """
         # Filter by date range if specified
-        filtered_comments = self._filter_comments_by_date(comments, start_date, end_date)
+        filtered_comments = self._filter_comments_by_date(
+            comments, start_date, end_date
+        )
 
         # Sort comments only if sort_order is specified
         if sort_order is not None:
@@ -347,9 +373,13 @@ class SentimentService:
         validated_limit = self.__validate_parameters(limit, sort_order)
 
         # Parse date parameters
-        parsed_start_date, parsed_end_date = self._parse_date_parameters(start_date, end_date)
+        parsed_start_date, parsed_end_date = self._parse_date_parameters(
+            start_date, end_date
+        )
 
-        logger.info(f"Analyzing sentiment for subfeddit: {subfeddit_name} (limit: {validated_limit})")
+        logger.info(
+            f"Analyzing sentiment for subfeddit: {subfeddit_name} (limit: {validated_limit})"
+        )
 
         # Fetch comments with smart date-aware pagination and analyze sentiment
         comments_with_sentiment = await self._fetch_and_analyze_comments(
@@ -360,18 +390,25 @@ class SentimentService:
         if not comments_with_sentiment:
             logger.warning(f"No comments found for subfeddit: {subfeddit_name}")
             return SentimentAnalysisResponse(
-                subfeddit=subfeddit_name, total_comments=0, comments=[], subfeddit_info=None
+                subfeddit=subfeddit_name,
+                total_comments=0,
+                comments=[],
+                subfeddit_info=None,
             )
 
         # Apply sorting if requested (date filtering already done during fetch)
         processed_comments = (
-            self._sort_comments(comments_with_sentiment, sort_order) if sort_order else comments_with_sentiment
+            self._sort_comments(comments_with_sentiment, sort_order)
+            if sort_order
+            else comments_with_sentiment
         )
 
         # Get subfeddit info
         subfeddit_info = await self.feddit_client.get_subfeddit_info(subfeddit_name)
 
-        logger.info(f"Successfully analyzed {len(processed_comments)} comments for {subfeddit_name}")
+        logger.info(
+            f"Successfully analyzed {len(processed_comments)} comments for {subfeddit_name}"
+        )
 
         return SentimentAnalysisResponse(
             subfeddit=subfeddit_name,

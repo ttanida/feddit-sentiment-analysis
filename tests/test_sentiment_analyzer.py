@@ -35,7 +35,10 @@ class TestSentimentAnalyzer:
         result = self.analyzer.analyze_text(text)
 
         assert isinstance(result, SentimentResult)
-        assert result.classification in ["positive", "negative"]  # Only positive or negative allowed
+        assert result.classification in [
+            "positive",
+            "negative",
+        ]  # Only positive or negative allowed
 
     def test_analyze_empty_text(self):
         """Test analyzing empty text."""
@@ -43,7 +46,9 @@ class TestSentimentAnalyzer:
 
         assert isinstance(result, SentimentResult)
         assert result.polarity_score == 0.0
-        assert result.classification == "positive"  # 0.0 is classified as positive (>= 0)
+        assert (
+            result.classification == "positive"
+        )  # 0.0 is classified as positive (>= 0)
 
     def test_analyze_batch(self):
         """Test batch sentiment analysis."""
@@ -74,7 +79,11 @@ class TestSentimentAnalyzer:
 
     def test_polarity_score_range(self):
         """Test that polarity scores are within expected range."""
-        texts = ["Amazing wonderful fantastic!", "Terrible awful horrible!", "This is regular text."]
+        texts = [
+            "Amazing wonderful fantastic!",
+            "Terrible awful horrible!",
+            "This is regular text.",
+        ]
 
         for text in texts:
             result = self.analyzer.analyze_text(text)

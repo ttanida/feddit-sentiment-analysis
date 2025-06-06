@@ -6,8 +6,12 @@ from pydantic import BaseModel, Field
 class SentimentResult(BaseModel):
     """Sentiment analysis result for a comment."""
 
-    polarity_score: float = Field(..., description="Sentiment polarity score between -1 and 1")
-    classification: str = Field(..., description="Sentiment classification: positive or negative")
+    polarity_score: float = Field(
+        ..., description="Sentiment polarity score between -1 and 1"
+    )
+    classification: str = Field(
+        ..., description="Sentiment classification: positive or negative"
+    )
 
 
 class CommentBase(BaseModel):
@@ -39,5 +43,9 @@ class SentimentAnalysisResponse(BaseModel):
 
     subfeddit: str = Field(..., description="Name of the subfeddit")
     total_comments: int = Field(..., description="Total number of comments returned")
-    comments: list[CommentWithSentiment] = Field(..., description="List of comments with sentiment analysis")
-    subfeddit_info: SubfedditInfo | None = Field(None, description="Subfeddit information if available")
+    comments: list[CommentWithSentiment] = Field(
+        ..., description="List of comments with sentiment analysis"
+    )
+    subfeddit_info: SubfedditInfo | None = Field(
+        None, description="Subfeddit information if available"
+    )

@@ -21,17 +21,30 @@ async def health_check():
     return {"status": "healthy", "service": "sentiment-analysis"}
 
 
-@router.get("/subfeddits/{subfeddit_name}/sentiment", response_model=SentimentAnalysisResponse)
+@router.get(
+    "/subfeddits/{subfeddit_name}/sentiment", response_model=SentimentAnalysisResponse
+)
 async def analyze_subfeddit_sentiment(
     subfeddit_name: str,
-    limit: int | None = Query(default=25, ge=1, le=100, description="Maximum number of comments to analyze (1-100)"),
-    start_date: str | None = Query(
-        default=None, description="Filter comments after this date (ISO format: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)"
+    limit: int
+    | None = Query(
+        default=25,
+        ge=1,
+        le=100,
+        description="Maximum number of comments to analyze (1-100)",
     ),
-    end_date: str | None = Query(
-        default=None, description="Filter comments before this date (ISO format: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)"
+    start_date: str
+    | None = Query(
+        default=None,
+        description="Filter comments after this date (ISO format: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)",
     ),
-    sort_order: str | None = Query(
+    end_date: str
+    | None = Query(
+        default=None,
+        description="Filter comments before this date (ISO format: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)",
+    ),
+    sort_order: str
+    | None = Query(
         default=None,
         description="Sort comments by polarity score: 'asc' (most negative first), 'desc' (most positive first), or None (no sorting - chronological order)",
     ),
@@ -54,11 +67,15 @@ async def analyze_subfeddit_sentiment(
     - 'asc': Most negative comments first (polarity score -1.0 → 1.0)
     """
     try:
-        logger.info(f"Processing sentiment analysis request for subfeddit: {subfeddit_name}")
+        logger.info(
+            f"Processing sentiment analysis request for subfeddit: {subfeddit_name}"
+        )
 
         # Validate sort_order parameter
         if sort_order is not None and sort_order not in ["asc", "desc"]:
-            raise ValueError(f"sort_order must be 'asc', 'desc', or None, got: {sort_order}")
+            raise ValueError(
+                f"sort_order must be 'asc', 'desc', or None, got: {sort_order}"
+            )
 
         result = await sentiment_service.analyze_subfeddit_sentiment(
             subfeddit_name=subfeddit_name,
@@ -72,7 +89,9 @@ async def analyze_subfeddit_sentiment(
 
     except FedditAPIError as e:
         logger.error(f"Feddit API error for {subfeddit_name}: {str(e)}")
-        raise HTTPException(status_code=503, detail=f"Unable to fetch data from Feddit API: {str(e)}")
+        raise HTTPException(
+            status_code=503, detail=f"Unable to fetch data from Feddit API: {str(e)}"
+        )
 
     except ValueError as e:
         logger.error(f"Invalid parameter for {subfeddit_name}: {str(e)}")
@@ -80,4 +99,7 @@ async def analyze_subfeddit_sentiment(
 
     except Exception as e:
         logger.error(f"Unexpected error analyzing {subfeddit_name}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error occurred while processing request")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error occurred while processing request",
+        )

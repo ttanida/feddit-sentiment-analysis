@@ -66,7 +66,9 @@ class TestAPI:
 
         mock_analyze.return_value = mock_response
 
-        response = client.get(f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment")
+        response = client.get(
+            f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment"
+        )
         assert response.status_code == 200
 
         data = response.json()
@@ -80,7 +82,9 @@ class TestAPI:
 
     def test_analyze_sentiment_with_parameters(self, client):
         """Test sentiment analysis with query parameters."""
-        with patch("src.services.sentiment_service.analyze_subfeddit_sentiment") as mock_analyze:
+        with patch(
+            "src.services.sentiment_service.analyze_subfeddit_sentiment"
+        ) as mock_analyze:
             mock_analyze.return_value = {
                 "subfeddit": "Dummy Topic 1",
                 "total_comments": 0,
@@ -111,7 +115,9 @@ class TestAPI:
 
     def test_analyze_sentiment_no_sorting(self, client):
         """Test sentiment analysis with no sorting parameter."""
-        with patch("src.services.sentiment_service.analyze_subfeddit_sentiment") as mock_analyze:
+        with patch(
+            "src.services.sentiment_service.analyze_subfeddit_sentiment"
+        ) as mock_analyze:
             mock_response = {
                 "subfeddit": "Dummy Topic 1",
                 "total_comments": 2,
@@ -121,14 +127,20 @@ class TestAPI:
                         "username": "user1",
                         "text": "Great!",
                         "created_at": 1640995200,
-                        "sentiment": {"polarity_score": 0.8, "classification": "positive"},
+                        "sentiment": {
+                            "polarity_score": 0.8,
+                            "classification": "positive",
+                        },
                     },
                     {
                         "id": "2",
                         "username": "user2",
                         "text": "Okay.",
                         "created_at": 1641081600,
-                        "sentiment": {"polarity_score": 0.2, "classification": "positive"},
+                        "sentiment": {
+                            "polarity_score": 0.2,
+                            "classification": "positive",
+                        },
                     },
                 ],
                 "subfeddit_info": None,
@@ -136,7 +148,9 @@ class TestAPI:
 
             mock_analyze.return_value = mock_response
 
-            response = client.get(f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment")
+            response = client.get(
+                f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment"
+            )
             assert response.status_code == 200
 
             data = response.json()
@@ -154,7 +168,9 @@ class TestAPI:
 
     def test_analyze_sentiment_explicit_none_sorting(self, client):
         """Test sentiment analysis with explicitly passed None sort_order."""
-        with patch("src.services.sentiment_service.analyze_subfeddit_sentiment") as mock_analyze:
+        with patch(
+            "src.services.sentiment_service.analyze_subfeddit_sentiment"
+        ) as mock_analyze:
             mock_analyze.return_value = {
                 "subfeddit": "Dummy Topic 1",
                 "total_comments": 1,
@@ -164,7 +180,10 @@ class TestAPI:
                         "username": "user1",
                         "text": "Test comment",
                         "created_at": 1640995200,
-                        "sentiment": {"polarity_score": 0.0, "classification": "neutral"},
+                        "sentiment": {
+                            "polarity_score": 0.0,
+                            "classification": "neutral",
+                        },
                     }
                 ],
                 "subfeddit_info": None,
@@ -179,16 +198,23 @@ class TestAPI:
     def test_analyze_sentiment_invalid_parameters(self, client):
         """Test sentiment analysis with invalid parameters."""
         # Test invalid limit (too low)
-        response = client.get(f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment", params={"limit": 0})
+        response = client.get(
+            f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment",
+            params={"limit": 0},
+        )
         assert response.status_code == 422
 
         # Test invalid limit (too high)
-        response = client.get(f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment", params={"limit": 101})
+        response = client.get(
+            f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment",
+            params={"limit": 101},
+        )
         assert response.status_code == 422
 
         # Test invalid sort_order
         response = client.get(
-            f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment", params={"sort_order": "invalid"}
+            f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment",
+            params={"sort_order": "invalid"},
         )
         assert response.status_code == 400
 
@@ -202,7 +228,9 @@ class TestAPI:
 
         mock_analyze.side_effect = FedditAPIError("Feddit API unavailable")
 
-        response = client.get(f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment")
+        response = client.get(
+            f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment"
+        )
         assert response.status_code == 503
 
         data = response.json()
@@ -213,7 +241,9 @@ class TestAPI:
         """Test handling of validation errors."""
         mock_analyze.side_effect = ValueError("Invalid date format")
 
-        response = client.get(f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment")
+        response = client.get(
+            f"{settings.api_prefix}/subfeddits/Dummy%20Topic%201/sentiment"
+        )
         assert response.status_code == 400
 
         data = response.json()
