@@ -24,8 +24,8 @@ A production-ready microservice that provides sentiment analysis for comments fr
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd feddit-api
+git clone https://github.com/ttanida/feddit-sentiment-analysis.git
+cd feddit-sentiment-analysis
 ```
 
 ### 2. Run with Docker Compose (Recommended)
