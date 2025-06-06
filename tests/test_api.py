@@ -38,7 +38,7 @@ class TestAPI:
         assert data["status"] == "healthy"
         assert data["service"] == "sentiment-analysis"
 
-    @patch("src.services.sentiment_service.analyze_subfeddit_sentiment")
+    @patch("src.api.routes.sentiment_service.analyze_subfeddit_sentiment")
     def test_analyze_sentiment_success(self, mock_analyze, client):
         """Test successful sentiment analysis."""
         # Mock the service response
@@ -83,7 +83,7 @@ class TestAPI:
     def test_analyze_sentiment_with_parameters(self, client):
         """Test sentiment analysis with query parameters."""
         with patch(
-            "src.services.sentiment_service.analyze_subfeddit_sentiment"
+            "src.api.routes.sentiment_service.analyze_subfeddit_sentiment"
         ) as mock_analyze:
             mock_analyze.return_value = {
                 "subfeddit": "Dummy Topic 1",
@@ -116,7 +116,7 @@ class TestAPI:
     def test_analyze_sentiment_no_sorting(self, client):
         """Test sentiment analysis with no sorting parameter."""
         with patch(
-            "src.services.sentiment_service.analyze_subfeddit_sentiment"
+            "src.api.routes.sentiment_service.analyze_subfeddit_sentiment"
         ) as mock_analyze:
             mock_response = {
                 "subfeddit": "Dummy Topic 1",
@@ -169,7 +169,7 @@ class TestAPI:
     def test_analyze_sentiment_explicit_none_sorting(self, client):
         """Test sentiment analysis with explicitly passed None sort_order."""
         with patch(
-            "src.services.sentiment_service.analyze_subfeddit_sentiment"
+            "src.api.routes.sentiment_service.analyze_subfeddit_sentiment"
         ) as mock_analyze:
             mock_analyze.return_value = {
                 "subfeddit": "Dummy Topic 1",
@@ -221,7 +221,7 @@ class TestAPI:
         data = response.json()
         assert "sort_order must be" in data["detail"]
 
-    @patch("src.services.sentiment_service.analyze_subfeddit_sentiment")
+    @patch("src.api.routes.sentiment_service.analyze_subfeddit_sentiment")
     def test_analyze_sentiment_feddit_error(self, mock_analyze, client):
         """Test handling of Feddit API errors."""
         from src.clients import FedditAPIError
@@ -236,7 +236,7 @@ class TestAPI:
         data = response.json()
         assert "Unable to fetch data from Feddit API" in data["detail"]
 
-    @patch("src.services.sentiment_service.analyze_subfeddit_sentiment")
+    @patch("src.api.routes.sentiment_service.analyze_subfeddit_sentiment")
     def test_analyze_sentiment_validation_error(self, mock_analyze, client):
         """Test handling of validation errors."""
         mock_analyze.side_effect = ValueError("Invalid date format")
@@ -247,4 +247,4 @@ class TestAPI:
         assert response.status_code == 400
 
         data = response.json()
-        assert "Invalid parameter" in data["detail"]
+        assert "Invalid date format" in data["detail"]
