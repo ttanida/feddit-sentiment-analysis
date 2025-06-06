@@ -347,7 +347,7 @@ class SentimentService:
     async def analyze_subfeddit_sentiment(
         self,
         subfeddit_name: str,
-        limit: int = None,
+        limit: int | None = None,
         start_date: str | None = None,
         end_date: str | None = None,
         sort_order: str | None = None,

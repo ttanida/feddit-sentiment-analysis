@@ -19,7 +19,7 @@ For production systems requiring higher accuracy, consider alternatives like:
 
 import logging
 
-from textblob import TextBlob
+from textblob import TextBlob  # type: ignore[import-untyped]
 
 from ..config import settings
 from ..models import SentimentResult

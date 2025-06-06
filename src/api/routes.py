@@ -26,7 +26,7 @@ async def health_check():
 )
 async def analyze_subfeddit_sentiment(
     subfeddit_name: str,
-    limit: int | None = Query(
+    limit: int = Query(
         default=25,
         ge=1,
         le=100,

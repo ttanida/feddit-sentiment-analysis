@@ -118,7 +118,7 @@ class FedditClient:
         # Return cached data if valid
         if self.__is_cache_valid():
             logger.debug("Using cached subfeddits data")
-            return self._subfeddits_cache
+            return self._subfeddits_cache or []
 
         try:
             logger.debug("Fetching fresh subfeddits data from API")
