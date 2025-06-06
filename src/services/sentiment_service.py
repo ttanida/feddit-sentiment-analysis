@@ -51,41 +51,6 @@ class SentimentService:
 
         return validated_limit
 
-    def _filter_comments_by_date(
-        self,
-        comments: list[CommentWithSentiment],
-        start_date: datetime | None = None,
-        end_date: datetime | None = None,
-    ) -> list[CommentWithSentiment]:
-        """
-        Filter comments by date range.
-
-        Args:
-            comments: List of comments to filter
-            start_date: Filter comments after this date
-            end_date: Filter comments before this date
-
-        Returns:
-            Filtered list of comments
-        """
-        if not start_date and not end_date:
-            return comments
-
-        filtered_comments = []
-
-        for comment in comments:
-            comment_date = datetime.fromtimestamp(comment.created_at)
-
-            # Check if comment is within date range
-            if start_date and comment_date < start_date:
-                continue
-            if end_date and comment_date > end_date:
-                continue
-
-            filtered_comments.append(comment)
-
-        return filtered_comments
-
     def _sort_comments(
         self, comments: list[CommentWithSentiment], sort_order: str = "desc"
     ) -> list[CommentWithSentiment]:
@@ -311,38 +276,6 @@ class SentimentService:
             )
             comments_with_sentiment.append(comment_with_sentiment)
         return comments_with_sentiment
-
-    def _process_comments(
-        self,
-        comments: list[CommentWithSentiment],
-        start_date: datetime | None,
-        end_date: datetime | None,
-        sort_order: str | None,
-    ) -> list[CommentWithSentiment]:
-        """
-        Apply filtering and sorting to comments.
-
-        Args:
-            comments: List of comments to process
-            start_date: Filter comments after this date
-            end_date: Filter comments before this date
-            sort_order: Sort order ('asc', 'desc', or None for no sorting)
-
-        Returns:
-            Processed list of comments
-        """
-        # Filter by date range if specified
-        filtered_comments = self._filter_comments_by_date(
-            comments, start_date, end_date
-        )
-
-        # Sort comments only if sort_order is specified
-        if sort_order is not None:
-            sorted_comments = self._sort_comments(filtered_comments, sort_order)
-            return sorted_comments
-
-        # Return in original order (chronological) if no sorting requested
-        return filtered_comments
 
     async def analyze_subfeddit_sentiment(
         self,

@@ -72,53 +72,6 @@ class TestSentimentService:
         with pytest.raises(ValueError, match="Invalid date format"):
             self.service._parse_date_parameters("invalid-date", None)
 
-    def test_filter_comments_by_date_no_filters(self):
-        """Test filtering comments with no date filters."""
-        comments = [
-            CommentWithSentiment(
-                id="1",
-                username="user1",
-                text="test",
-                created_at=1640995200,
-                sentiment=SentimentResult(
-                    polarity_score=0.5, classification="positive"
-                ),
-            )
-        ]
-
-        result = self.service._filter_comments_by_date(comments)
-        assert len(result) == 1
-        assert result[0].id == "1"
-
-    def test_filter_comments_by_date_with_start_date(self):
-        """Test filtering comments with start date."""
-        comments = [
-            CommentWithSentiment(
-                id="1",
-                username="user1",
-                text="test",
-                created_at=1640995200,  # 2022-01-01
-                sentiment=SentimentResult(
-                    polarity_score=0.5, classification="positive"
-                ),
-            ),
-            CommentWithSentiment(
-                id="2",
-                username="user2",
-                text="test",
-                created_at=1609459200,  # 2021-01-01
-                sentiment=SentimentResult(
-                    polarity_score=-0.5, classification="negative"
-                ),
-            ),
-        ]
-
-        start_date = datetime(2021, 12, 1)
-        result = self.service._filter_comments_by_date(comments, start_date=start_date)
-
-        assert len(result) == 1
-        assert result[0].id == "1"
-
     def test_sort_comments_desc(self):
         """Test sorting comments in descending order."""
         comments = [
@@ -244,78 +197,6 @@ class TestSentimentService:
 
             with pytest.raises(FedditAPIError):
                 await self.service._fetch_and_analyze_comments("test_subfeddit", 25)
-
-    def test_process_comments(self):
-        """Test processing comments with filtering and sorting."""
-        comments = [
-            CommentWithSentiment(
-                id="1",
-                username="user1",
-                text="test",
-                created_at=1640995200,  # 2022-01-01
-                sentiment=SentimentResult(
-                    polarity_score=0.2, classification="positive"
-                ),
-            ),
-            CommentWithSentiment(
-                id="2",
-                username="user2",
-                text="test",
-                created_at=1641081600,  # 2022-01-02
-                sentiment=SentimentResult(
-                    polarity_score=0.8, classification="positive"
-                ),
-            ),
-        ]
-
-        start_date = datetime(2022, 1, 1)
-        end_date = datetime(2022, 1, 3)
-
-        result = self.service._process_comments(comments, start_date, end_date, "asc")
-
-        assert len(result) == 2
-        # Should be sorted in ascending order (lowest polarity first)
-        assert result[0].sentiment.polarity_score == 0.2
-        assert result[1].sentiment.polarity_score == 0.8
-
-    def test_process_comments_no_sorting(self):
-        """Test processing comments without sorting (None sort_order)."""
-        comments = [
-            CommentWithSentiment(
-                id="1",
-                username="user1",
-                text="test",
-                created_at=1640995200,  # 2022-01-01
-                sentiment=SentimentResult(
-                    polarity_score=0.8, classification="positive"
-                ),
-            ),
-            CommentWithSentiment(
-                id="2",
-                username="user2",
-                text="test",
-                created_at=1641081600,  # 2022-01-02
-                sentiment=SentimentResult(
-                    polarity_score=0.2, classification="positive"
-                ),
-            ),
-        ]
-
-        start_date = datetime(2022, 1, 1)
-        end_date = datetime(2022, 1, 3)
-
-        result = self.service._process_comments(comments, start_date, end_date, None)
-
-        assert len(result) == 2
-        # Should maintain original chronological order (no sorting by sentiment)
-        assert (
-            result[0].sentiment.polarity_score == 0.8
-        )  # First comment chronologically
-        assert (
-            result[1].sentiment.polarity_score == 0.2
-        )  # Second comment chronologically
-        assert result[0].id == "1"
-        assert result[1].id == "2"
 
     @pytest.mark.asyncio
     async def test_analyze_subfeddit_sentiment_success(self):
