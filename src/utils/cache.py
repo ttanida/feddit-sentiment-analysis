@@ -10,9 +10,9 @@ class InMemoryCache:
 
     def __init__(self, default_ttl: int = 3600):
         """Initialize cache with default TTL in seconds."""
-        self._cache: dict[
-            str, tuple[Any, float]
-        ] = {}  # hash of text mapping to (SentimentResult, expiry_time)
+        self._cache: dict[str, tuple[Any, float]] = (
+            {}
+        )  # hash of text mapping to (SentimentResult, expiry_time)
         self._default_ttl = default_ttl  # default TTL (time to live) in seconds
 
     def __is_expired(self, expiry_time: float) -> bool:

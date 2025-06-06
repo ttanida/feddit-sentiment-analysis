@@ -26,25 +26,21 @@ async def health_check():
 )
 async def analyze_subfeddit_sentiment(
     subfeddit_name: str,
-    limit: int
-    | None = Query(
+    limit: int | None = Query(
         default=25,
         ge=1,
         le=100,
         description="Maximum number of comments to analyze (1-100)",
     ),
-    start_date: str
-    | None = Query(
+    start_date: str | None = Query(
         default=None,
         description="Filter comments after this date (ISO format: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)",
     ),
-    end_date: str
-    | None = Query(
+    end_date: str | None = Query(
         default=None,
         description="Filter comments before this date (ISO format: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)",
     ),
-    sort_order: str
-    | None = Query(
+    sort_order: str | None = Query(
         default=None,
         description="Sort comments by polarity score: 'asc' (most negative first), 'desc' (most positive first), or None (no sorting - chronological order)",
     ),
