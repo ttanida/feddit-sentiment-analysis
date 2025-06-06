@@ -192,7 +192,7 @@ class SentimentService:
         """
         batch_size = 100  # Process comments in batches of 100
         skip = 0
-        all_matching_comments = []
+        all_matching_comments: list[CommentBase] = []
 
         logger.info(
             f"Using smart pagination for date range: {start_date} to {end_date}"

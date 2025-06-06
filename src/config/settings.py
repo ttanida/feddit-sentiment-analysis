@@ -1,7 +1,6 @@
 """Application configuration management."""
 
-from pydantic import ConfigDict
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -26,7 +25,7 @@ class Settings(BaseSettings):
     # Development Configuration
     debug: bool = False
 
-    model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 # Global settings instance
