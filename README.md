@@ -39,8 +39,8 @@ docker-compose -f docker-compose.sentiment.yml up -d
 Services will be available at:
 
 - **Sentiment Analysis API**: http://localhost:8000
-- **Feddit API**: http://localhost:8080
 - **API Documentation**: http://localhost:8000/docs
+- **Feddit API**: http://localhost:8080
 
 ### 3. Alternative: Local Development
 
@@ -305,10 +305,6 @@ curl "http://localhost:8000/api/v1/subfeddits/Dummy%20Topic%201/sentiment?sort_o
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Support
 
