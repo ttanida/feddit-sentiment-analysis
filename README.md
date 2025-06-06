@@ -17,7 +17,7 @@ A production-ready microservice that provides sentiment analysis for comments fr
 
 ### Prerequisites
 
-- Python 3.10+
+- Python 3.10+ (**Note**: For local development, Python 3.10 is recommended)
 - Docker and Docker Compose
 - Git
 
